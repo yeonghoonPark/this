@@ -25,7 +25,7 @@
  */
 
 /**
- *  1. 일반 함수 호출
+ *  1. 일반함수(function) 호출
  *    - 일반 함수일 경우에 this에는 전역객체인 window객체가 context객체가 된다.
  *    - 일반 함수로 호출 된 모든 함수(중첩함수, 콜백함수 포함) 내부의 this에는 전역객체인 window객체가 context객체가 된다.
  *
@@ -45,10 +45,10 @@ function testFunc2(디스) {
 testFunc2(this);
 
 /**
- *  2. 메서드 호출
+ *  2. 메서드(method) 호출
  *    - 메서드 내부의 this는 메서드를 포함하고 있는 객체 또는 그 메서드를 부르는 객체가 context객체가 된다.
  *
- *  🧨. 주의점 (feat. 메서드에서 function declare를 사용해야하는 이유)
+ *  🧨. 주의점 (feat. 메서드에서 arrow function이 아닌 function declare를 사용해야하는 이유)
  *    - arrow function으로 메서드를 정의할 경우 this는 메서드를 소유한 객체나 메서드를 호출한 객체가 아닌 상위의 전역객체 window객체를 context객체로 갖는다, 이러한 이유로 메서드는 function declare방식을 이용하여 선언해주는 것이 좋다
  */
 
@@ -62,10 +62,39 @@ const obj1 = {
   c: () => {
     console.log(this.a);
   },
+  d: function () {
+    console.log(this.b);
+    console.log(typeof this.b);
+  },
 };
 
 obj1.b(); // 1
 obj1.c(); // undefined
+obj1.d(); // method인 b, type은 function
 
-// 생성자함수 개념
-// https://developer-talk.tistory.com/281
+/**
+ *  3. 생성자함수(constructor function) 호출
+ *    - 생성자함수 내부의 this는 후에 new로 생성할 인스턴스가 this의 context객체가 된다.
+ *    - new연산자를 이용해 호출해야 생성자함수로 동작한다.
+ *
+ *  🧨. 주의점
+ *    - new연산자를 붙이지 않고 호출한다면 일반함수로 동작하여 이때의 this는 전역객체 window객체를 context객체로 갖는다.
+ */
+
+class Person {
+  // constructor내부의 this는 미래의 생성 될 새로운 인스턴스를 context객체로 가진다.
+  constructor(name, age, address) {
+    this.name = name;
+    this.age = age;
+    this.address = address;
+  }
+  sayHello() {
+    console.log(`안녕하세요 ${this.name}입니다`);
+  }
+}
+
+let jasper = new Person("Jasper", 35, "Inchon");
+jasper.sayHello();
+console.log(jasper.address);
+
+// Function.prototype.apply/call/bind 메서드에 의한 간접 호출
